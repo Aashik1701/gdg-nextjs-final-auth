@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { registerUser } from "@/actions/post-auth";
+import mongoose from "mongoose";
 
 export async function POST(req) {
     try {
