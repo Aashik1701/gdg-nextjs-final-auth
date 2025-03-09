@@ -1,11 +1,12 @@
 "use client";
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { useRouter } from "next/navigation";
 import { useSession, signOut } from "next-auth/react";
+import { motion } from 'framer-motion';
 
 const NavBar = () => {
   const router = useRouter();
@@ -13,7 +14,7 @@ const NavBar = () => {
 
   return (
     <nav className="absolute top-0 left-0 right-0 z-30 flex flex-col items-center justify-between p-4 md:flex-row">
-      <Link href="/" className="flex items-center mb-4 space-x-2 md:mb-0">
+      {/* <Link href="/" className="flex items-center mb-4 space-x-2 md:mb-0">
         <Image 
           src="/gdgLogo.svg"
           alt="GDG Logo"
@@ -21,7 +22,7 @@ const NavBar = () => {
           height={50}
           className="w-auto h-8 md:h-10"
         />
-      </Link>
+      </Link> */}
       <div className="flex flex-wrap justify-center gap-2">
         {!session ? (
           <>
@@ -30,14 +31,14 @@ const NavBar = () => {
               onClick={() => router.push("/sign-in")}
               className="text-sm text-white md:text-base hover:bg-white/20"
             >
-              Login
+              {/* Login */}
             </Button>
             <Button 
               variant="ghost" 
               onClick={() => router.push("/sign-up")}
               className="text-sm text-white md:text-base hover:bg-white/20"
             >
-              Sign Up
+              {/* Sign Up */}
             </Button>
           </>
         ) : (
@@ -63,8 +64,187 @@ const NavBar = () => {
   );
 };
 
+const Hero = () => {
+  const [rows, setRows] = useState([
+    { photos: [], key: 1 },
+    { photos: [], key: 2 }
+  ]);
+
+  useEffect(() => {
+    const allPhotos = [
+      '/eventsBannerbg.png',
+      '/eventsBannerbg.png',
+      '/eventsBannerbg.png'
+    ];
+    
+    const shuffleArray = (array) => {
+      const shuffled = [...array];
+      for (let i = shuffled.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+      }
+      return shuffled;
+    };
+
+    const ensureNoDuplicates = (photos) => {
+      const result = [...photos];
+      for (let i = 1; i < result.length; i++) {
+        if (result[i] === result[i - 1]) {
+          for (let j = i + 1; j < result.length; j++) {
+            if (result[j] !== result[i - 1] && result[j] !== result[i + 1]) {
+              [result[i], result[j]] = [result[j], result[i]];
+              break;
+            }
+          }
+        }
+      }
+      return result;
+    };
+
+    const repeatedPhotos = Array(3).fill(allPhotos).flat();
+    const shuffledPhotos1 = ensureNoDuplicates(shuffleArray([...repeatedPhotos]));
+    const shuffledPhotos2 = ensureNoDuplicates(shuffleArray([...repeatedPhotos]));
+
+    setRows([
+      { photos: shuffledPhotos1, key: 1 },
+      { photos: shuffledPhotos2, key: 2 }
+    ]);
+  }, []);
+
+  return (
+    <motion.div 
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      className="relative flex flex-col items-center w-full min-h-screen overflow-hidden"
+    >
+      <div className="absolute inset-0 bg-grid-pattern opacity-5" />
+      
+      <div className="w-full mt-8">
+        <div className="relative w-full overflow-hidden">
+          <div className="flex photo-stream scroll-left">
+            {rows[0].photos.length > 0 && 
+              [...rows[0].photos, ...rows[0].photos].map((photo, index) => (
+                <motion.div
+                  key={`top-${index}`}
+                  whileHover={{ scale: 1.1, rotate: 5 }}
+                  className="flex-none mx-2"
+                >
+ <Image
+                    src={photo}
+                    alt={`Community Member ${index + 1}`}
+                    width={80}
+                    height={80}
+                    className="object-cover w-16 h-16 shadow-lg rounded-xl md:w-20 md:h-20"
+                    priority={index < 4}
+                  />
+                </motion.div>
+              ))
+            }
+          </div>
+        </div>
+        
+        <div className="relative w-full mt-4 overflow-hidden">
+          <div className="flex photo-stream scroll-right">
+            {rows[1].photos.length > 0 && 
+              [...rows[1].photos, ...rows[1].photos].map((photo, index) => (
+                <motion.div
+                  key={`bottom-${index}`}
+                  whileHover={{ scale: 1.1, rotate: -5 }}
+                  className="flex-none mx-2"
+                >
+                  <Image
+                    src={photo}
+                    alt={`Community Member ${index + 1}`}
+                    width={80}
+                    height={80}
+                    className="object-cover w-16 h-16 shadow-lg rounded-xl md:w-20 md:h-20"
+                    priority={index < 4}
+                  />
+                </motion.div>
+              ))
+            }
+          </div>
+        </div>
+      </div>
+
+      <motion.div 
+        initial={{ y: 20, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        transition={{ delay: 0.2 }}
+        className="relative max-w-4xl px-6 py-16 mx-auto text-center"
+      >
+        <div className="absolute rounded-full bg-blue-600/20 w-72 h-72 blur-3xl opacity-20 -top-20 -left-20" />
+        <div className="absolute rounded-full bg-purple-600/20 w-72 h-72 blur-3xl opacity-20 -bottom-20 -right-20" />
+        
+        <h1 className="mb-6 text-4xl font-extrabold tracking-tight text-white md:text-6xl">
+          Join the
+          <span className="relative">
+            <span className="relative z-10 px-2 text-transparent bg-gradient-to-r from-blue-400 via-purple-400 to-blue-400 bg-clip-text">
+             amazing
+            </span>
+            <div className="absolute bottom-0 left-0 w-full h-3 bg-blue-600/20 opacity-30 -rotate-2" />
+          </span>
+          events
+        </h1>
+        
+        <p className="max-w-2xl mx-auto mb-8 text-lg leading-relaxed text-gray-300 md:text-xl">
+          Join niche clubs, interact with experts, explore, network with high-profile and ambitious individuals, get internships, and join India&apos;s largest community all for free!
+        </p>
+
+        <motion.button 
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
+          onClick={() => window.open('', '_blank')}
+          className="inline-flex items-center px-8 py-4 text-lg font-semibold text-white transition-all duration-300 bg-gradient-to-r from-blue-600 to-purple-600 rounded-xl hover:shadow-xl hover:shadow-blue-500/20"
+        >
+          <svg className="w-6 h-6 mr-2" fill="currentColor" viewBox="0 0 24 24">
+            <path d="M20.317 4.492c-1.53-.69-3.17-1.2-4.885-1.49a.075.075 0 0 0-.079.036c-.21.369-.444.85-.608 1.23a18.566 18.566 0 0 0-5.487 0 12.36 12.36 0 0 0-.617-1.23A.077.077 0 0 0 8.562 3c-1.714.29-3.354.8-4.885 1.491a.07.07 0 0 0-.032.027C.533 9.093-.32 13.555.099 17.961a.08.08 0 0 0 .031.055 20.03 20.03 0 0 0 5.993 2.98.078.078 0 0 0 .084-.026 13.83 13.83 0 0 0 1.226-1.963.074.074 0 0 0-.041-.104 13.175 13 ```javascript
+.175 0 0 1-1.872-.878.075.075 0 0 1-.008-.125c.126-.093.252-.19.372-.287a.075.075 0 0 1 .078-.01c3.927 1.764 8.18 1.764 12.061 0a.075.075 0 0 1 .079.009c.12.098.245.195.372.288a.075.075 0 0 1-.006.125c-.598.344-1.22.635-1.873.877a.075.075 0 0 0-.041.105c.36.687.772 1.341 1.225 1.962a.077.077 0 0 0 .084.028 19.963 19.963 0 0 0 6.002-2.981.076.076 0 0 0 .032-.054c.5-5.094-.838-9.52-3.549-13.442a.06.06 0 0 0-.031-.028zM8.02 15.278c-1.182 0-2.157-1.069-2.157-2.38 0-1.312.956-2.38 2.157-2.38 1.21 0 2.176 1.077 2.157 2.38 0 1.312-.956 2.38-2.157 2.38zm7.975 0c-1.183 0-2.157-1.069-2.157-2.38 0-1.312.955-2.38 2.157-2.38 1.21 0 2.176 1.077 2.157 2.38 0 1.312-.946 2.38-2.157 2.38z"/>
+          </svg>
+          Join Now
+        </motion.button>
+      </motion.div>
+
+      <style jsx global>{`
+        @keyframes slideLeft {
+          0% { transform: translateX(0); }
+          100% { transform: translateX(-50%); }
+        }
+
+        @keyframes slideRight {
+          0% { transform: translateX(-50%); }
+          100% { transform: translateX(0); }
+        }
+
+        .scroll-left {
+          animation: slideLeft 30s linear infinite;
+        }
+
+        .scroll-right {
+          animation: slideRight 30s linear infinite;
+        }
+
+        .photo-stream {
+          display: flex;
+          gap: 1rem;
+          padding: 1rem 0;
+        }
+
+        .photo-stream:hover {
+          animation-play-state: paused;
+        }
+
+        .bg-grid-pattern {
+          background-image: linear-gradient(to right, rgba(255,255,255,0.1) 1px, transparent 1px),
+                          linear-gradient(to bottom, rgba(255,255,255,0.1) 1px, transparent 1px);
+          background-size: 24px 24px;
+        }
+      `}</style>
+    </motion.div>
+  );
+};
+
 const LandingPage = () => {
-  // Example featured events data
   const featuredEvents = [
     {
       id: '1',
@@ -92,7 +272,6 @@ const LandingPage = () => {
     }
   ];
 
-  // Categories with icons
   const categories = [
     { name: 'Technology', icon: '/chrome.svg' },
     { name: 'Business', icon: '/window.svg' },
@@ -102,47 +281,8 @@ const LandingPage = () => {
 
   return (
     <div className="flex flex-col min-h-screen">
-      {/* Navigation */}
       <NavBar />
-
-      {/* Hero Section */}
-      <section className="relative flex items-center justify-center h-screen overflow-hidden">
-        <div className="absolute inset-0 z-0">
-          <div 
-            className="absolute inset-0 z-10 bg-gradient-to-r from-blue-900/80 to-purple-900/80"
-          ></div>
-          <Image
-            src="/eventsBannerbg.png"
-            alt="Events Background"
-            fill
-            className="object-cover"
-            priority
-          />
-        </div>
-        
-        <div className="container z-20 px-4 mx-auto text-center">
-          <h1 className="mb-6 text-5xl font-bold text-white md:text-7xl animate-fadeIn">
-            Discover Amazing Events
-          </h1>
-          <p className="max-w-3xl mx-auto mb-10 text-xl md:text-2xl text-white/90">
-            Find and book the best events happening around you. From conferences to concerts, we've got you covered.
-          </p>
-          <div className="flex flex-col justify-center gap-4 sm:flex-row">
-            <Link href="/console/events">
-              <Button size="lg" className="px-8 py-6 text-lg bg-blue-600 hover:bg-blue-700">
-                Browse Events
-              </Button>
-            </Link>
-            <Link href="/console/events/new">
-              <Button size="lg" variant="outline" className="px-8 py-6 text-lg text-white bg-transparent border-2 border-white hover:bg-white/10">
-                Create Event
-              </Button>
-            </Link>
-          </div>
-        </div>
-      </section>
-
-      {/* Event Categories */}
+      <Hero />
       <section className="py-20 bg-gradient-to-b from-gray-50 to-white">
         <div className="container px-4 mx-auto">
           <h2 className="mb-16 text-3xl font-bold text-center md:text-4xl">Explore by Category</h2>
@@ -165,8 +305,7 @@ const LandingPage = () => {
         </div>
       </section>
 
-      {/* Featured Events */}
-      <section className="bg-white py -20">
+      <section className="py-20 bg-white">
         <div className="container px-4 mx-auto">
           <div className="flex items-center justify-between mb-12">
             <h2 className="text-3xl font-bold md:text-4xl">Featured Events</h2>
@@ -217,7 +356,7 @@ const LandingPage = () => {
 
       <section className="py-20 bg-gradient-to-b from-gray-50 to-white">
         <div className="container px-4 mx-auto">
-          <h2 className="mb-16 text-4xl font-bold text-center text-transparent md:text-5xl bg-clip-text bg-gradient-to-r from-blue-600 to-purple-600 animate-pulse">
+          <h2 className="mb-16 text-4xl font-bold text-center text-transparent md:text- 5xl bg-clip-text bg-gradient-to-r from-blue-600 to-purple-600 animate-pulse">
             How It Works
           </h2>
           <div className="grid grid-cols-1 gap-8 md:grid-cols-3">
@@ -262,7 +401,6 @@ const LandingPage = () => {
         </div>
       </section>
 
-      {/* Footer */}
       <footer className="py-12 text-white bg-gray-900">
         <div className="container px-4 mx-auto">
           <div className="grid grid-cols-1 gap-8 md:grid-cols-4">
@@ -291,7 +429,7 @@ const LandingPage = () => {
               <div className="flex space-x-4">
                 <a href="https://gdg.community.dev/gdg-on-campus-vellore-institute-of-technology-chennai-india/" className="text-gray-400 hover:text-white">
                   <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M24 4.557c-.883.392-1.832.656-2.828.775 1.017-.609 1.798-1.574 2.165-2.724-.951.564-2.005.974-3.127 1.195-.897-.957-2.178-1.555-3.594-1.555-3.179 0-5.515 2.966-4.797 6.045-4.091-.205-7.719-2.165-10.148-5.144-1.29 2.213-.669 5.108 1.523 6.574-.806-.026-1.566-.247-2.229-.616-.054 2.281 1.581 4.415 3.949 4.89-.693.188-1.452.232-2.224.084.626 1.956 2.444 3.379 4.6 3.419-2.07 1.623-4.678 2.348-7.29 2.04 2.179 1.397 4.768 2.212 7.548 2.212 9.142 0 14.307-7.721 13.995-14.646.962-.695 1.797-1.562 2.457-2 .549z"></path>
+                    <path d="M24 4.557c-.883.392-1.832.656-2.828.775 1.017-.609 1.798-1.574 2.165-2.724-.951.564-2.005.974-3.127 1.195-.897-.957-2.178-1.555-3.594-1.555-3.179 0-5.515 2.966-4 .797 6.045-4.091-.205-7.719-2.165-10.148-5.144-1.29 2.213-.669 5.108 1.523 6.574-.806-.026-1.566-.247-2.229-.616-.054 2.281 1.581 4.415 3.949 4.89-.693.188-1.452.232-2.224.084.626 1.956 2.444 3.379 4.6 3.419-2.07 1.623-4.678 2.348-7.29 2.04 2.179 1.397 4.768 2.212 7.548 2.212 9.142 0 14.307-7.721 13.995-14.646.962-.695 1.797-1.562 2.457-2 .549z"></path>
                   </svg>
                 </a>
                 <a href="https://gdg.community.dev/gdg-on-campus-vellore-institute-of-technology-chennai-india/" className="text-gray-400 hover:text-white">
