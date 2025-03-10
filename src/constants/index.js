@@ -8,7 +8,7 @@ export const items = [
   },
   {
     title: "Events",
-    url: "/console/events",
+    url: "/events",
     icon: Inbox,
   },
   {

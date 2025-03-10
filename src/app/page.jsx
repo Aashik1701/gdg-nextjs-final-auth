@@ -1,15 +1,14 @@
-"use client";
-
-import LandingPage from "@/app/landingpage/page";
-import React from "react";
 import Navbar from "@/components/Navbar";
-const Page = () => {
-  return (
-    <div>
-      <Navbar />
-      <LandingPage />
-    </div>
-  );
-};
+import LandingPage from "./landingpage/page";
 
-export default Page;
+export default function RootLayout({ children }) {
+  return (
+    <html lang="en">
+      <body>
+        <Navbar />
+        {children}
+        <LandingPage />
+      </body>
+    </html>
+  );
+}
